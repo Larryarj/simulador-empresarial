@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123b78">
+    <title>Simulador Empresarial</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="fundo-decorativo" aria-hidden="true"></div>
+    <main class="app-shell">
+        <header class="topo">
+            <div class="marca">
+                <div class="marca-icone" aria-hidden="true">SE</div>
+                <div>
+                    <p class="etiqueta">JOGO DE ESTRATÉGIA</p>
+                    <h1>Simulador Empresarial</h1>
+                </div>
+            </div>
+            <p class="subtitulo">Decida com estratégia. Administre recursos. Conquiste o mercado.</p>
+        </header>
+
+        <section id="entrada" class="painel tela-entrada">
+            <div class="intro-tela">
+                <span class="icone-grande" aria-hidden="true">↗</span>
+                <p class="etiqueta">SUA EMPRESA, SUAS DECISÕES</p>
+                <h2>Pronto para liderar?</h2>
+                <p class="texto-suave">Crie uma sala para seus colegas ou entre em uma partida existente.</p>
+            </div>
+
+            <div class="formulario">
+                <label for="nome">Nome do administrador</label>
+                <input id="nome" maxlength="30" placeholder="Ex.: Fulano" autocomplete="organization">
+                <button id="criar" class="botao-principal">Criar nova sala <span aria-hidden="true">→</span></button>
+
+                <div class="separador"><span>OU ENTRE EM UMA SALA</span></div>
+
+                <label for="codigo">Código da sala</label>
+                <input id="codigo" maxlength="6" placeholder="Ex.: ABC123" autocomplete="off">
+                <button id="entrar" class="botao-secundario">Entrar na sala</button>
+            </div>
+        </section>
+
+        <p id="mensagem" class="mensagem-global" role="status" aria-live="polite"></p>
+
+        <section id="sala" class="painel" hidden>
+            <div class="cabecalho-sala">
+                <div>
+                    <p class="etiqueta">SALA DE ESPERA</p>
+                    <h2>Empresas participantes</h2>
+                    <p class="texto-suave">Convide as outras equipes para começar.</p>
+                </div>
+                <span id="contador" class="contador">0/6</span>
+            </div>
+
+            <div class="convite-cartao">
+                <p class="texto-suave">Código da sala</p>
+                <div class="linha-convite">
+                    <strong id="codigoSala"></strong>
+                    <button id="copiar" class="botao-secundario botao-pequeno">Copiar convite</button>
+                </div>
+                <p id="linkConvite" class="link-convite"></p>
+            </div>
+
+            <ul id="jogadores" class="lista-jogadores"></ul>
+            <p id="avisoSala" class="aviso-sala texto-suave">Aguardando participantes...</p>
+            <button id="iniciar" class="botao-principal" hidden>Iniciar partida <span aria-hidden="true">→</span></button>
+            <p id="avisoInicio" class="texto-suave"></p>
+        </section>
+
+        <section id="jogo" class="painel painel-jogo" hidden>
+            <div class="cabecalho-sala">
+                <div>
+                    <p class="etiqueta">DESAFIO EMPRESARIAL</p>
+                    <h2 id="tituloDesafio"></h2>
+                </div>
+                <span id="seloRodada" class="contador">Rodada 1</span>
+            </div>
+            <p id="descricaoDesafio" class="texto-suave"></p>
+            <div id="dadosFinanceiros" class="grade-financeira"></div>
+            <div class="secao-decisao">
+                <p class="etiqueta">MOMENTO DA DECISÃO</p>
+                <h3>Qual decisão sua empresa tomará?</h3>
+                <p class="texto-suave">Escolha uma alternativa. As consequências serão reveladas depois que todas as empresas responderem.</p>
+            </div>
+            <div id="alternativas" class="grade-alternativas"></div>
+            <p id="statusResposta" class="status-resposta" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="resultado" class="painel painel-resultado" hidden>
+            <div class="resultado-hero">
+                <span class="icone-grande" aria-hidden="true">✓</span>
+                <p class="etiqueta">RESULTADO DA RODADA</p>
+                <h2>Decisões reveladas!</h2>
+                <p class="texto-suave">Veja as escolhas e as consequências de cada empresa.</p>
+            </div>
+            <div id="explicacoes" class="lista-explicacoes"></div>
+            <div class="titulo-ranking">
+                <div>
+                    <p class="etiqueta">PLACAR</p>
+                    <h3>Classificação</h3>
+                </div>
+            </div>
+            <ol id="ranking" class="lista-ranking"></ol>
+            <p id="fimRodada" class="aviso-sala texto-suave">Aguarde o anfitrião iniciar a próxima rodada.</p>
+        </section>
+
+        <footer class="rodape">
+            <span>SIMULADOR EMPRESARIAL</span>
+            <span>Estratégia • Gestão • Resultado</span>
+        </footer>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

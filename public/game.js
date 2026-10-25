@@ -34,8 +34,12 @@ function mostrarMensagem(texto, tipo = "") {
 }
 
 function entrarNaSala() {
+    if (!socket.connected) {
+        mostrarMensagem("Conectando ao servidor. Aguarde alguns segundos e tente novamente.", "erro");
+        return;
+    }
     if (!nome.value.trim()) {
-        mostrarMensagem("Digite o nome do administador.", "erro");
+        mostrarMensagem("Digite o nome da sua empresa.", "erro");
         nome.focus();
         return;
     }
@@ -49,6 +53,10 @@ function entrarNaSala() {
 }
 
 document.getElementById("criar").addEventListener("click", () => {
+    if (!socket.connected) {
+        mostrarMensagem("Conectando ao servidor. Aguarde alguns segundos e tente novamente.", "erro");
+        return;
+    }
     if (!nome.value.trim()) {
         mostrarMensagem("Digite o nome da sua empresa.", "erro");
         nome.focus();
@@ -164,7 +172,8 @@ socket.on("desafioAtual", desafio => {
     alternativasAtuais = desafio.alternativas;
 
     mostrarTela("jogo");
-    document.getElementById("seloRodada").textContent = `Rodada ${rodadaAtual} de ${totalRodadas}`;
+    const seloRodada = document.getElementById("seloRodada");
+    if (seloRodada) seloRodada.textContent = `Rodada ${rodadaAtual} de ${totalRodadas}`;
 
     document.getElementById("tituloDesafio").textContent = desafio.titulo;
     document.getElementById("descricaoDesafio").textContent = desafio.descricao;

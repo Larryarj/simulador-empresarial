@@ -1,12 +1,13 @@
 const express = require("express");
 const http = require("http");
+const path = require("path");
 const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 const salas = new Map();
 
@@ -453,6 +454,7 @@ io.on("connection", socket => {
     });
 });
 
-server.listen(process.env.PORT || 3000, () => {
-    console.log("Simulador Empresarial rodando na porta 3000");
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Simulador Empresarial rodando na porta ${PORT}`);
 });

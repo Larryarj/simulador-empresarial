@@ -1,17 +1,16 @@
 const express = require("express");
 const http = require("http");
-const path = require("path");
 const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
 
 const salas = new Map();
 
-// Cinco cenários empresariais. As classificações e pontuações ficam no servidor
+// Oito cenários empresariais. As classificações e pontuações ficam no servidor
 // e só são enviadas aos jogadores depois que todos responderem.
 const desafios = [
     {
@@ -204,6 +203,122 @@ const desafios = [
             }
         ]
     }
+    ,
+    {
+        titulo: "Rodada 6 — Oficina Mecânica Giro Certo",
+        descricao: "A oficina está vendendo mais serviços, mas o proprietário não sabe se o negócio está realmente melhorando. A equipe precisa avaliar os resultados antes de decidir como agir.",
+        conceito: "Indicadores de desempenho financeiro",
+        aprendizado: "Acompanhar indicadores como receita, custos, lucro e margem ajuda a avaliar o desempenho do negócio ao longo do tempo. Aumentar as vendas não garante maior lucro se os custos crescerem ainda mais. Comparar os resultados com metas e períodos anteriores ajuda a identificar problemas e tomar decisões.",
+        financeiro: [
+            { nome: "Receita do mês", valor: 50000 },
+            { nome: "Custos e despesas do mês", valor: 47000 },
+            { nome: "Receita do mês anterior", valor: 42000 },
+            { nome: "Meta de lucro mensal", valor: 6000 }
+        ],
+        alternativas: [
+            {
+                texto: "Comemorar o aumento das vendas e ignorar os custos, pois a receita cresceu em relação ao mês anterior.",
+                classificacao: "Muito ruim",
+                pontos: -10,
+                explicacao: "A receita cresceu, mas o resultado atual é de apenas R$ 3.000, abaixo da meta de R$ 6.000. Ignorar os custos esconde o problema de rentabilidade."
+            },
+            {
+                texto: "Cortar despesas de forma imediata e igual para todas as áreas, sem verificar quais custos estão aumentando.",
+                classificacao: "Ruim",
+                pontos: -3,
+                explicacao: "Reduzir gastos sem analisar sua origem pode prejudicar a qualidade do serviço e não resolver as causas do resultado abaixo da meta."
+            },
+            {
+                texto: "Comparar receita e despesas com os meses anteriores para identificar onde houve aumento de custos.",
+                classificacao: "Boa",
+                pontos: 5,
+                explicacao: "A comparação dos resultados ajuda a localizar variações relevantes e é um primeiro passo para melhorar o desempenho."
+            },
+            {
+                texto: "Acompanhar mensalmente receita, custos, lucro e margem, comparar com metas e definir ações para corrigir os desvios.",
+                classificacao: "Muito boa",
+                pontos: 10,
+                explicacao: "Indicadores e metas permitem entender se o crescimento é rentável, identificar desvios e acompanhar se as medidas corretivas funcionam."
+            }
+        ]
+    },
+    {
+        titulo: "Rodada 7 — Distribuidora Norte Sul",
+        descricao: "A distribuidora vende a prazo para clientes e também compra mercadorias com prazo de pagamento. O gerente precisa entender por que falta dinheiro mesmo quando as vendas parecem boas.",
+        conceito: "Ciclo de caixa e contas a pagar e receber",
+        aprendizado: "O ciclo de caixa está relacionado ao tempo entre o desembolso para manter a operação e o recebimento das vendas. Vender a prazo pode aumentar a receita registrada, mas o dinheiro só entra depois. Controlar vencimentos, negociar prazos e acompanhar a inadimplência ajuda a evitar falta de caixa.",
+        financeiro: [
+            { nome: "Contas a receber nos próximos 30 dias", valor: 28000 },
+            { nome: "Contas a pagar nos próximos 15 dias", valor: 35000 },
+            { nome: "Caixa disponível", valor: 9000 },
+            { nome: "Clientes com pagamentos atrasados", valor: 8000 }
+        ],
+        alternativas: [
+            {
+                texto: "Continuar vendendo a prazo sem analisar os vencimentos e usar o caixa disponível para novas compras.",
+                classificacao: "Muito ruim",
+                pontos: -10,
+                explicacao: "As obrigações vencem antes de parte dos recebimentos e o caixa é insuficiente para cobrir a diferença. Ignorar os prazos amplia o risco de atraso."
+            },
+            {
+                texto: "Suspender todas as vendas a prazo imediatamente, sem avaliar os clientes nem os efeitos nas vendas.",
+                classificacao: "Ruim",
+                pontos: -3,
+                explicacao: "A medida pode reduzir parte do risco, mas também afastar bons clientes. É melhor avaliar limites de crédito, atrasos e prazos."
+            },
+            {
+                texto: "Entrar em contato com clientes atrasados e organizar um calendário de pagamentos e recebimentos.",
+                classificacao: "Boa",
+                pontos: 5,
+                explicacao: "Cobrança organizada e calendário financeiro melhoram a visibilidade do caixa, embora também seja necessário negociar obrigações próximas."
+            },
+            {
+                texto: "Projetar o caixa por vencimento, negociar prazos com fornecedores, intensificar a cobrança e revisar critérios de crédito dos clientes.",
+                classificacao: "Muito boa",
+                pontos: 10,
+                explicacao: "A ação combina controle do ciclo de caixa com negociação dos prazos e prevenção de novos atrasos, ajudando a alinhar entradas e saídas."
+            }
+        ]
+    },
+    {
+        titulo: "Rodada 8 — Mercado Boa Compra",
+        descricao: "O mercado tem vendas elevadas, estoque cheio e pagamentos próximos. O proprietário precisa usar os registros financeiros para entender a situação real e decidir se pode ampliar as compras.",
+        conceito: "Demonstrações financeiras e projeção de resultados",
+        aprendizado: "Registros financeiros organizados e relatórios de receitas, custos, despesas, ativos e obrigações ajudam a compreender a situação do negócio. Projetar resultados e conferir dados antes de assumir novos compromissos reduz o risco de decisões baseadas apenas na impressão de que as vendas estão boas.",
+        financeiro: [
+            { nome: "Vendas do mês", valor: 80000 },
+            { nome: "Custos e despesas estimados", valor: 73000 },
+            { nome: "Estoque atual a preço de custo", valor: 45000 },
+            { nome: "Contas a pagar nos próximos 10 dias", valor: 22000 }
+        ],
+        alternativas: [
+            {
+                texto: "Ampliar imediatamente as compras porque o mercado vendeu R$ 80.000 no mês.",
+                classificacao: "Muito ruim",
+                pontos: -10,
+                explicacao: "As vendas, isoladamente, não mostram quanto dinheiro está disponível nem se os compromissos próximos podem ser pagos. O estoque já é elevado."
+            },
+            {
+                texto: "Decidir apenas pelo saldo bancário de hoje, sem conferir contas a pagar, estoque ou custos.",
+                classificacao: "Ruim",
+                pontos: -3,
+                explicacao: "O saldo de um único dia não mostra obrigações futuras, mercadorias paradas ou a rentabilidade real do período."
+            },
+            {
+                texto: "Conferir receitas, custos, despesas, estoque e contas a pagar antes de aprovar novas compras.",
+                classificacao: "Boa",
+                pontos: 5,
+                explicacao: "Reunir os dados principais melhora a decisão e evita comprometer recursos sem entender as necessidades do negócio."
+            },
+            {
+                texto: "Atualizar os registros financeiros, projetar o caixa e o resultado dos próximos períodos e definir limites de compra conforme a demanda e os vencimentos.",
+                classificacao: "Muito boa",
+                pontos: 10,
+                explicacao: "Registros confiáveis e projeções permitem avaliar rentabilidade, liquidez e necessidade de estoque antes de assumir novos compromissos."
+            }
+        ]
+    }
+
 ];
 
 function gerarCodigo() {
@@ -454,7 +569,6 @@ io.on("connection", socket => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, "0.0.0.0", () => {
-    console.log(`Simulador Empresarial rodando na porta ${PORT}`);
+server.listen(process.env.PORT || 3000, () => {
+    console.log("Simulador Empresarial rodando na porta 3000");
 });

@@ -26,16 +26,16 @@ const desafios = [
         ],
         alternativas: [
             {
-                texto: "Ignorar os pagamentos e esperar que a situação se resolva.",
-                classificacao: "Muito ruim",
-                pontos: -10,
-                explicacao: "Ignorar as obrigações pode gerar multas, prejudicar o fornecimento e comprometer a confiança dos parceiros."
-            },
-            {
                 texto: "Usar todo o caixa para pagar parcialmente os fornecedores, sem planejar as demais despesas.",
                 classificacao: "Ruim",
                 pontos: -3,
                 explicacao: "Um pagamento parcial sem planejamento pode deixar a empresa sem recursos para despesas essenciais."
+            },
+            {
+                texto: "Ignorar os pagamentos e esperar que a situação se resolva.",
+                classificacao: "Muito ruim",
+                pontos: -10,
+                explicacao: "Ignorar as obrigações pode gerar multas, prejudicar o fornecimento e comprometer a confiança dos parceiros."
             },
             {
                 texto: "Negociar prazos com fornecedores e organizar as datas de pagamento.",
@@ -217,16 +217,16 @@ const desafios = [
         ],
         alternativas: [
             {
-                texto: "Comemorar o aumento das vendas e ignorar os custos, pois a receita cresceu em relação ao mês anterior.",
-                classificacao: "Muito ruim",
-                pontos: -10,
-                explicacao: "A receita cresceu, mas o resultado atual é de apenas R$ 3.000, abaixo da meta de R$ 6.000. Ignorar os custos esconde o problema de rentabilidade."
-            },
-            {
                 texto: "Cortar despesas de forma imediata e igual para todas as áreas, sem verificar quais custos estão aumentando.",
                 classificacao: "Ruim",
                 pontos: -3,
                 explicacao: "Reduzir gastos sem analisar sua origem pode prejudicar a qualidade do serviço e não resolver as causas do resultado abaixo da meta."
+            },
+            {
+                texto: "Comemorar o aumento das vendas e ignorar os custos, pois a receita cresceu em relação ao mês anterior.",
+                classificacao: "Muito ruim",
+                pontos: -10,
+                explicacao: "A receita cresceu, mas o resultado atual é de apenas R$ 3.000, abaixo da meta de R$ 6.000. Ignorar os custos esconde o problema de rentabilidade."
             },
             {
                 texto: "Comparar receita e despesas com os meses anteriores para identificar onde houve aumento de custos.",
@@ -355,10 +355,21 @@ function atualizarSala(codigo) {
     io.to(codigo).emit("estadoSala", { codigo, ...dadosPublicosSala(sala) });
 }
 
+function embaralharAlternativas(alternativas) {
+    const copia = [...alternativas];
+    for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+}
+
 function enviarDesafio(codigo) {
     const sala = salas.get(codigo);
     if (!sala) return;
     const desafio = desafioAtualDaSala(sala);
+    // Sorteia uma ordem por sala/rodada e compartilha a mesma ordem com todos.
+    sala.alternativasEmbaralhadas = embaralharAlternativas(desafio.alternativas);
 
     io.to(codigo).emit("desafioAtual", {
         rodadaAtual: sala.rodadaAtual + 1,
@@ -367,7 +378,7 @@ function enviarDesafio(codigo) {
         descricao: desafio.descricao,
         financeiro: desafio.financeiro,
         // Nunca enviar classificação, pontos ou explicação antes das respostas.
-        alternativas: desafio.alternativas.map(({ texto }) => ({ texto }))
+        alternativas: sala.alternativasEmbaralhadas.map(({ texto }) => ({ texto }))
     });
 }
 
@@ -405,11 +416,12 @@ function revelarResultado(codigo) {
     if (!sala || sala.resultadoDisponivel || sala.partidaFinalizada) return;
 
     const desafio = desafioAtualDaSala(sala);
+    const alternativasRodada = sala.alternativasEmbaralhadas || desafio.alternativas;
     sala.resultadoDisponivel = true;
 
     const resultados = [...sala.jogadores.entries()].map(([id, jogador]) => {
         const indice = sala.respostas.get(id);
-        const alternativa = desafio.alternativas[indice];
+        const alternativa = alternativasRodada[indice];
         jogador.pontuacao += alternativa.pontos;
 
         return {
@@ -432,7 +444,7 @@ function revelarResultado(codigo) {
         conceito: desafio.conceito,
         aprendizado: desafio.aprendizado,
         resultados,
-        explicacoes: desafio.alternativas.map(alternativa => ({
+        explicacoes: alternativasRodada.map(alternativa => ({
             classificacao: alternativa.classificacao,
             explicacao: alternativa.explicacao
         }))
@@ -472,7 +484,8 @@ io.on("connection", socket => {
             resultadoDisponivel: false,
             partidaFinalizada: false,
             rodadaAtual: 0,
-            respostas: new Map()
+            respostas: new Map(),
+            alternativasEmbaralhadas: null
         };
 
         sala.jogadores.set(socket.id, { nome, pontuacao: 0 });
